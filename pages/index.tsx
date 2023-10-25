@@ -2,38 +2,26 @@
 
 import React, { useState } from 'react';
 import axios from 'axios';
+import Header from '../components/Header';
 
 const Home: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSignup = async () => {
-    try {
-      const response = await axios.post('/api/auth', { action: 'signup', email, password });
-      console.log(response.data.message);
-    } catch (error) {
-      console.error('Error occurred during signup:', error);
-    }
+  
+    return (
+      <div>
+        <h1>
+            <p>TutorMe</p>
+            <button onClick={event => window.location.href="/about_us"}>About Us</button>
+            <button onClick={event => window.location.href="/loginPage"}>Login</button>
+        </h1>
+        <div>
+          <p>Elevate Your Learning Journey With Tailored Mentorship!</p>
+        </div>
+        <div>
+          <button onClick={event => window.location.href="/signupPage"}>Register Now</button>
+        </div>
+      </div>
+    );
   };
-
-  const handleLogin = async () => {
-    try {
-      const response = await axios.post('/api/auth', { action: 'login', email, password });
-      console.log(response.data.message);
-    } catch (error) {
-      console.error('Error occurred during login:', error);
-    }
-  };
-
-  return (
-    <div>
-      <h1>Welcome to TutorMe</h1>
-      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={handleSignup}>Sign Up</button>
-      <button onClick={handleLogin}>Login</button>
-    </div>
-  );
-};
-
-export default Home;
+  
+  export default Home;
+  
