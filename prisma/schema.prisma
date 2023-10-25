@@ -16,8 +16,7 @@ model Tutor {
     lastName  String 
     email     String
     password  String 
-    meetings  Meeting[]
-    classes   String[]
+
 }
 
 model Tutee {
@@ -26,17 +25,7 @@ model Tutee {
     lastName  String 
     email     String
     password  String 
-    meetings  Meeting[]
 }
 
-model Meeting {
-  meeting_id String @default(cuid()) @id
-  tutor_id   String
-  tutee_id   String?
-  date       DateTime
-  accepted   Boolean
-  classes    String
-  tutor      Tutor    @relation(fields: [tutor_id], references: [tutor_id])
-  tutee      Tutee?   @relation(fields: [tutee_id], references: [tutee_id])
-}
+
 
