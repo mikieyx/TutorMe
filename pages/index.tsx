@@ -1,60 +1,36 @@
-import React from "react"
-import { GetStaticProps } from "next"
-import Layout from "../components/Layout"
-import Post, { PostProps } from "../components/Post"
+// pages/index.tsx
 
-export const getStaticProps: GetStaticProps = async () => {
-  const feed = [
-    {
-      id: "1",
-      title: "Prisma is the perfect ORM for Next.js",
-      content: "[Prisma](https://github.com/prisma/prisma) and Next.js go _great_ together!",
-      published: false,
-      author: {
-        name: "Nikolas Burk",
-        email: "burk@prisma.io",
-      },
-    },
-  ]
-  return { 
-    props: { feed }, 
-    revalidate: 10 
-  }
-}
+import React, { useState } from "react";
+import axios from "axios";
+import Header from "../components/Header";
+import logo from "../assests/logo.svg";
 
-type Props = {
-  feed: PostProps[]
-}
-
-const Blog: React.FC<Props> = (props) => {
+const Home: React.FC = () => {
   return (
-    <Layout>
-      <div className="page">
-        <h1>Public Feed</h1>
-        <main>
-          {props.feed.map((post) => (
-            <div key={post.id} className="post">
-              <Post post={post} />
-            </div>
-          ))}
-        </main>
+    <div>
+      <img src="../assests/logo.svg" alt="" />
+      <p className="text-6xl font-bold ">TutorMe</p>
+
+      <button onClick={(event) => (window.location.href = "/aboutUsPage")}>
+        About Us
+      </button>
+      <button onClick={(event) => (window.location.href = "/loginPage")}>
+        Login
+      </button>
+
+      <div>
+        <p>
+          Elevate Your Learning Journey With Tailored Mentorship! lol hello
+          shobuj noob
+        </p>
       </div>
-      <style jsx>{`
-        .post {
-          background: white;
-          transition: box-shadow 0.1s ease-in;
-        }
+      <div>
+        <button onClick={(event) => (window.location.href = "/signupPage")}>
+          Register Now
+        </button>
+      </div>
+    </div>
+  );
+};
 
-        .post:hover {
-          box-shadow: 1px 1px 3px #aaa;
-        }
-
-        .post + .post {
-          margin-top: 2rem;
-        }
-      `}</style>
-    </Layout>
-  )
-}
-
-export default Blog
+export default Home;

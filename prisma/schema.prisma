@@ -31,7 +31,12 @@ model Meeting {
     meeting_id int    @default(cuid()) @id
     time String
     location String
-    tutor_id String
-    tutee_id String @default(null) @id
+    tutor_id int
+    tutee_id int @default(null) @id
+}
+
+model Teaches {
+    tutor_id int
+    course_name String
 }
 
