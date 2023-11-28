@@ -6,26 +6,33 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+    url = "postgres://default:hO1gYL8dZDnE@ep-young-math-53323449-pooler.us-east-1.postgres.vercel-storage.com:5432/verceldb?pgbouncer=true&connect_timeout=15" // uses connection pooling
     directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-model Tutor {
-    tutor_id        String     @default(cuid()) @id
+
+
+model User {
+    user_id        String     @default(cuid()) @id
     firstName String
     lastName  String 
-    email     String
-    password  String 
-
+    email     String @unique
+    meetings_tutor Meeting[] @relation(name: "tutor")
+    meetings_tutee Meeting[] @relation(name: "tutee")
+    classes String[]
+    is_Tutor Boolean
 }
 
-model Tutee {
-    tutee_id        String     @default(cuid()) @id
-    firstName String
-    lastName  String 
-    email     String
-    password  String 
+model Meeting {
+    meeting_id String          @default(cuid()) @id
+    tutor User  @relation(name: "tutor", fields: [tutor_id], references: [user_id])
+    tutor_id String
+    tutee User  @relation(name: "tutee", fields: [tutee_id], references: [user_id])
+    tutee_id String
+    date  DateTime
+    booked Boolean
 }
+
 
 
 
