@@ -8,7 +8,7 @@ const createMeetingPage: React.FC = () => {
   
     return (
       <div>
-        <p>Tutee Home</p>
+        <p>Create Meeting Page</p>
       </div>
     );
   };
