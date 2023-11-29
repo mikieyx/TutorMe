@@ -14,7 +14,7 @@ model Tutor {
     tutor_id  int     @default(cuid()) @id
     firstName String
     lastName  String 
-    email     String
+    email     String  @unique
     password  String 
 
 }
@@ -29,7 +29,7 @@ model Tutee {
 
 model Meeting {
     meeting_id int    @default(cuid()) @id
-    time String
+    time DateTime
     location String
     tutor_id int
     tutee_id int @default(null) @id
