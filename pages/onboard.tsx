@@ -21,7 +21,7 @@ export default function Onboard(props) {
             }),
             method: "POST"
         })).json();
-        router.push(res.is_Tutor ? "/tutorHomePage" : "/tuteeHomePage")
+        router.push("/addClass")
     }
     return <>
         <button onClick={() => setTutor(true)}>I'm a tutor!</button>
@@ -52,7 +52,7 @@ export async function getServerSideProps(context){
     if (user){
         return {
             redirect: {
-                destination: user.is_Tutor ? "/tutorHomePage" : "/tuteeHomePage",
+                destination: session.is_tutor ? "/tutorHomePage" : 'tuteeHomePage',
                 permanent: false
             }
         }
