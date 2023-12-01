@@ -1,9 +1,10 @@
 // pages/loginPage.tsx
 
 import React, { useState } from 'react';
-import axios from 'axios';
-import Header from '../components/Header';
 import { signIn, signOut, useSession } from "next-auth/react"
+import { Session, getServerSession } from 'next-auth';
+import { authOptions } from './api/auth/[...nextauth]';
+import prisma from '../lib/prisma';
 
 const loginPage: React.FC = () => {
     const { data, status } = useSession()
@@ -28,4 +29,38 @@ const loginPage: React.FC = () => {
   };
   
   export default loginPage;
-  
+
+
+  export async function getServerSideProps(context){
+    const session: Session = await getServerSession(context.req, context.res, authOptions)
+    
+    if (!session){
+        return {
+            props: {
+              session
+            }
+        }
+    }
+    const email = session.user.email
+
+    const user = await prisma.user.findUnique({
+        where: {
+            email: email,
+        },
+    })
+
+    if (user){
+        return {
+            redirect: {
+                destination: session.is_tutor ? "/tutorHomePage" : '/tuteeHomePage',
+                permanent: false
+            }
+        }
+    }
+    return {
+      redirect: {
+        destination: "/onboard",
+        permanent: false
+      }
+    };
+}  

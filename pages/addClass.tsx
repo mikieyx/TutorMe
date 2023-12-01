@@ -31,7 +31,7 @@ export default function AddClass(){
             }),
             method: "POST"
         })).json();
-        router.push(session.is_tutor ? "/tutorHomePage" : "tuteeHomePage")
+        router.push(session.is_tutor ? "/tutorHomePage" : "/tuteeHomePage")
     }
 
     return<>
