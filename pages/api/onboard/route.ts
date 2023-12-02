@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return;
     }
     if(req.method !== "POST") {
-        res.status(405).json({message: "Fuck off"})
+        res.status(405).json({message: "Not POST"})
         return;
     }
 

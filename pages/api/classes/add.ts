@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import {Session} from "next-auth"
 import {getServerSession} from "next-auth/next";
 import { authOptions } from '../auth/[...nextauth]';
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../../lib/prisma';
 
 //Post request to create a new user
