@@ -19,7 +19,7 @@ const about_us: React.FC = () => {
           </div>
           <ul className="flex items-center gap-10 text-slate-700 text-lg w-[240px]">
             <li className="hover:text-[#0038A8]">
-              <a href="#">Home</a>
+              <a href="/">Home</a>
             </li>
             <li className="hover:text-[#0038A8]">
               <button onClick={(event) => (window.location.href = "/about_us")}>
