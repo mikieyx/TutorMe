@@ -21,16 +21,16 @@ const MeetingList = () => {
     const mockMeetings: Meeting[] = [
       {
         id: 1,
-        tutorName: 'John Doe',
-        subject: 'CS166',
+        tutorName: 'Jimmy Ji',
+        subject: 'CMPE133',
         date: '2023-12-01',
         startTime: '10:00 AM',
         endTime: '11:00 AM',
       },
       {
         id: 2,
-        tutorName: 'Jane Smith',
-        subject: 'CS149',
+        tutorName: 'Goo Fo',
+        subject: 'CS160',
         date: '2023-12-02',
         startTime: '11:30 AM',
         endTime: '12:30 PM',
@@ -50,17 +50,21 @@ const MeetingList = () => {
             <Logo src="/logo.svg" width="50" height="50" alt="logo"></Logo>
             <p className="text-3xl font-medium text-[#0038A8]">TutorMe</p>
           </div>
-          <ul className="flex items-center gap-10 text-slate-700 text-lg w-[240px]">
-            <li className="hover:text-[#0038A8]">
-              <a href="/index">Home</a>
+          <ul className="flex items-center gap-10 text-slate-700 text-lg w-[400px]">
+          <li className="hover:text-[#0038A8]">
+            <a href="/tuteeHomePage">Home</a>
             </li>
             <li className="hover:text-[#0038A8]">
-              <button onClick={(event) => (window.location.href = "/about_us")}>
-                About Us
-              </button>
+            <a href="/tuteeViewMeetings">View Meeting</a>
             </li>
           </ul>
           <div>
+            <button
+              className="border-2 border-[#0038A8] px-6 py-2 rounded-lg hover:bg-[#0038A8]  hover:text-white "
+              onClick={(event) => (window.location.href = "/")}
+            >
+              Logout
+            </button>
           </div>
         </header>
       </div>

@@ -13,12 +13,7 @@ interface Meeting {
   const TutorHomePage = () => {
   const router = useRouter();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
-  function addMeeting(){
-    router.push("/addMeeting")
-  }
-  function addClass(){
-    router.push("/addClass")
-  }
+
   useEffect(() => {
     // Mock data for meetings (can be replaced with actual data retrieval)
     const mockMeetings: Meeting[] = [
@@ -53,14 +48,25 @@ interface Meeting {
             <Logo src="/logo.svg" width="50" height="50" alt="logo"></Logo>
             <p className="text-3xl font-medium text-[#0038A8]">TutorMe</p>
           </div>
-          <ul className="flex items-center gap-10 text-slate-700 text-lg w-[240px]">
-            <li className="hover:text-[#0038A8]">
-            <button  onClick={addClass}>Add a class</button>
+          <ul className="flex items-center gap-10 text-slate-700 text-lg w-[400px]">
+          <li className="hover:text-[#0038A8]">
+            <a href="/tutorHomePage">Home</a>
             </li>
             <li className="hover:text-[#0038A8]">
-              <button  onClick={addMeeting}>Add a meeting</button>
+            <a href="/addMeeting">Add a Meeting</a>
+            </li>
+            <li className="hover:text-[#0038A8]">
+            <a href="/addClass">Add a Class</a>
             </li>
           </ul>
+          <div>
+            <button
+              className="border-2 border-[#0038A8] px-6 py-2 rounded-lg hover:bg-[#0038A8]  hover:text-white "
+              onClick={(event) => (window.location.href = "/")}
+            >
+              Logout
+            </button>
+          </div>
         </header>
       </div>
       
