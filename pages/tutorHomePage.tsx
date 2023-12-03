@@ -81,6 +81,7 @@ interface Meeting {
           <tr>
             <th>Tutee Name</th>
             <th>Subject</th>
+            {/* <th>Location</th> */}
             <th>Date</th>
             <th>Start Time</th>
             <th>End Time</th>
@@ -92,6 +93,7 @@ interface Meeting {
             <tr key={meeting.id}>
               <td>{meeting.tuteeName}</td>
               <td>{meeting.subject}</td>
+              {/* <td>{meeting.location}</td> */}
               <td>{meeting.date}</td>
               <td>{meeting.startTime}</td>
               <td>{meeting.endTime}</td>

@@ -34,7 +34,7 @@ export default function AddClass() {
         method: 'POST',
       })
     ).json();
-    router.push(session.is_tutor ? '/tutorHomePage' : '/tuteeHomePage');
+    router.push('/tutorHomePage');
   }
 
   return (
@@ -68,7 +68,8 @@ export default function AddClass() {
           </div>
         </header>
       </div>
-        <div className="flex justify-center items-center h-[600px]">
+
+      <div className="flex justify-center items-center h-[400px]">
       <div className="bg-white p-8 rounded shadow-md w-120">
         <h1 className="text-xl font-semibold mt-8 mb-4">Course</h1>
         <div className="flex mb-4">
@@ -104,32 +105,32 @@ export default function AddClass() {
   );
 }
 
-export async function getServerSideProps(context) {
-  const session: Session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: './loginPage',
-        permanenet: false,
-      },
-    };
+export async function getServerSideProps(context){
+  const session: Session = await getServerSession(context.req, context.res, authOptions)
+  
+  if (!session){
+      return {
+          redirect: {
+              destination: './loginPage',
+              permanenet: false,
+          },
+      }
   }
-  const email = session.user.email;
+  const email = session.user.email
 
   const user = await prisma.user.findUnique({
-    where: {
-      email: email,
-    },
-  });
-
-  if (!user) {
-    return {
-      redirect: {
-        destination: './onboard',
-        permanent: false,
+      where: {
+          email: email,
       },
-    };
+  })
+
+  if (!user){
+      return {
+          redirect: {
+              destination: './onboard',
+              permanent: false
+          }
+      }
   }
-  return { props: { session } };
-}
+  return {props: {session}};
+}  

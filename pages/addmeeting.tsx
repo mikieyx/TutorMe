@@ -1,5 +1,9 @@
 import Logo from "next/image";
 import React, { useState } from 'react';
+import { Session, getServerSession } from 'next-auth';
+import { useSession } from 'next-auth/react';
+import prisma from '../lib/prisma';
+import { authOptions } from './api/auth/[...nextauth]';
 
 interface AddMeetingProps {
   addMeeting: (newMeeting: Meeting) => void;
@@ -22,6 +26,8 @@ const AddMeeting: React.FC<AddMeetingProps> = ({ addMeeting }) => {
   const [date, setDate] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+  const [classes, setClasses] = useState([]);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +49,10 @@ const AddMeeting: React.FC<AddMeetingProps> = ({ addMeeting }) => {
     setStartTime('');
     setEndTime('');
   };
+
+  async function fetchClasses() {
+    // Fetch classes from /api/fetch
+  }
 
   return (
     <main className="w-9/12 mx-auto sticky max-h-[100px] ">
@@ -94,13 +104,13 @@ const AddMeeting: React.FC<AddMeetingProps> = ({ addMeeting }) => {
             <label htmlFor="subject" className="text-sm font-medium">
               Subject:
             </label>
-            <input
-              type="text"
+            <select 
+              onClick={fetchClasses}
               id="subject"
               value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="border p-2 rounded-md focus:outline-none focus:ring focus:border-blue-500"
-            />
+              onChange={(e) => setSubject(e.target.value)} 
+              className="text-sm font-medium">
+            </select>
           </div>
           {/*
           <div className="flex flex-col">
@@ -166,3 +176,43 @@ const AddMeeting: React.FC<AddMeetingProps> = ({ addMeeting }) => {
 };
 
 export default AddMeeting;
+
+export async function getServerSideProps(context) {
+  const session: Session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: './loginPage',
+        permanenet: false,
+      },
+    };
+  }
+  const email = session.user.email;
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: email,
+    },
+  });
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: './onboard',
+        permanent: false,
+      },
+    };
+  }
+  /*
+  const yourClasses = await prisma.user.findUnique({
+    where: {
+      email: session.user.email
+    },
+    select: {
+      classes: true  
+  }
+  })
+  */
+  return { props: { session } };
+}
