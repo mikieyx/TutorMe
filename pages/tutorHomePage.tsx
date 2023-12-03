@@ -49,14 +49,14 @@ interface Meeting {
             <p className="text-3xl font-medium text-[#0038A8]">TutorMe</p>
           </div>
           <ul className="flex items-center gap-10 text-slate-700 text-lg w-[400px]">
-          <li className="hover:text-[#0038A8]">
-            <a href="/tutorHomePage">Home</a>
+            <li className="hover:text-[#0038A8]">
+              <a href="/tutorHomePage">Home</a>
             </li>
             <li className="hover:text-[#0038A8]">
-            <a href="/addMeeting">Add a Meeting</a>
+              <a href="/addMeeting">Add a Meeting</a>
             </li>
             <li className="hover:text-[#0038A8]">
-            <a href="/addClass">Add a Class</a>
+              <a href="/addClass">Add a Class</a>
             </li>
           </ul>
           <div>

@@ -100,17 +100,18 @@ const AddMeeting: React.FC<AddMeetingProps> = ({ addMeeting }) => {
               className="border p-2 rounded-md focus:outline-none focus:ring focus:border-blue-500"
             />
           </div>
+          {/* CHANGE TO A DROPDOWN/SELECT WITH ONLY THE TUTOR'S CLASSES TO CHOOSE FROM */}
           <div className="flex flex-col">
             <label htmlFor="subject" className="text-sm font-medium">
               Subject:
             </label>
-            <select 
-              onClick={fetchClasses}
+            <input
+              type="text"
               id="subject"
               value={subject}
-              onChange={(e) => setSubject(e.target.value)} 
-              className="text-sm font-medium">
-            </select>
+              onChange={(e) => setSubject(e.target.value)}
+              className="border p-2 rounded-md focus:outline-none focus:ring focus:border-blue-500"
+            />
           </div>
           {/*
           <div className="flex flex-col">

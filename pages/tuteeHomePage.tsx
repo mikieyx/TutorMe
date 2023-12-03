@@ -15,6 +15,7 @@ const MeetingList = () => {
   const router = useRouter();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   
+  
 
   useEffect(() => {
     // Mock data for meetings (can be replaced with actual data retrieval)

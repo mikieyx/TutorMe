@@ -22,12 +22,7 @@ export default function Onboard(props) {
             }),
             method: "POST"
         })).json();
-        if (tutor) {
-            router.push("/addClass");
-        }
-        else {
-            router.push("/tuteeHomePage");
-        }
+        router.push("/addClass")
     }
     return (
     <div>
@@ -40,7 +35,7 @@ export default function Onboard(props) {
           </div>
           <ul className="flex items-center gap-10 text-slate-700 text-lg w-[240px]">
             <li className="hover:text-[#0038A8]">
-              <a href="/">Home</a>
+              <a href="/index">Home</a>
             </li>
             <li className="hover:text-[#0038A8]">
               <button onClick={(event) => (window.location.href = "/about_us")}>
@@ -58,17 +53,16 @@ export default function Onboard(props) {
           </div>
         </header>
 
-    <div className="max-w-xs mx-auto items-center mt-8 flex flex-col rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-4">Select Your Role</h2>
-        <button className="my-5 outline outline-2 text-black font-bold rounded-full py-4 px-12 bg-white hover:bg-green-200 focus:bg-green-500 focus:ring focus:ring-green-300" 
-            onClick={() => setTutor(true)}>
+    <div className="max-w-3xl mx-auto items-center mt-20 flex flex-col rounded-lg ">
+        <h2 className="text-5xl w-6/12  font-bold mb-4">Select Your Role</h2>
+        <button className="my-5 outline outline-2 text-black font-bold rounded-full py-4 px-12 bg-white hover:bg-[#F4C02B] focus:bg-green-500 focus:ring focus:ring-green-300 " onClick={() => setTutor(true) }>
             I'm a tutor!
         </button>
-        <button className="my-5 outline outline-2 text-black font-bold rounded-full py-4 px-12 bg-white hover:bg-green-200 focus:bg-green-500 focus:ring focus:ring-green-300" 
-            onClick={()=> setTutor(false)}>
+       
+        <button className="my-5 outline outline-2 text-black font-bold rounded-full py-4 px-12 bg-white hover:bg-[#F4C02B]  focus:bg-green-500  focus:ring focus:ring-green-300" onClick={()=> setTutor(false)}>
             I'm a tutee!
         </button>
-        <button className="my-5 text-black font-bold rounded-full py-4 px-10 bg-green-500 hover:bg-green-600" onClick={submitUser}>
+        <button className="my-5 text-black font-bold rounded-full py-4 px-10  outline outline-2 border-black bg-white   hover:bg-[#F4C02B]" onClick={submitUser}>
             Submit
         </button>
     </div>
