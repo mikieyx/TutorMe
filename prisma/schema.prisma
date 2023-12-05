@@ -31,6 +31,8 @@ model Meeting {
     tutee_id String
     date  DateTime
     booked Boolean
+    location String
+    class String
 }
 
 
