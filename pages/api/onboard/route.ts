@@ -7,13 +7,14 @@ import prisma from '../../../lib/prisma';
 
 //Post request to create a new user
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    // @ts-ignore
     const session: Session = await getServerSession(req, res, authOptions)
     if (!session){
         res.status(401).json({ message: "You must be logged in"});
         return;
     }
     if(req.method !== "POST") {
-        res.status(405).json({message: "Fuck off"})
+        res.status(405).json({message: "Not POST"})
         return;
     }
 
@@ -23,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 firstName: session.profile.given_name,
                 lastName: session.profile.family_name,
                 email: session.profile.email,
-                is_Tutor: req.body.is_Tutor
+                is_Tutor: req.body.is_Tutor,
             }
         });
         res.status(200).json({is_Tutor: req.body.is_Tutor});
