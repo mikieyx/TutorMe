@@ -5,6 +5,7 @@ import { authOptions } from '../auth/[...nextauth]';
 import { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../../lib/prisma';
 
+
 //Post request to create a new user
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const session: Session = await getServerSession(req, res, authOptions)
@@ -13,20 +14,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return;
     }
     if(req.method !== "POST") {
-        res.status(405).json({message: ""})
+        res.status(405).json({message: "Not POST"})
         return;
     }
-
+    console.log(req.body);
     try {
-        const newUser = await prisma.user.create({
+        const newMeeting = await prisma.meeting.create({
             data: {
-                firstName: session.profile.given_name,
-                lastName: session.profile.family_name,
-                email: session.profile.email,
-                is_Tutor: req.body.is_Tutor
+                tutor_id: req.body.tutor_id,
+                start_Time: req.body.start_Time,
+                end_Time: req.body.end_Time,
+                location: req.body.location,
+                class: req.body.class,
             }
         });
-        res.status(200).json({is_Tutor: req.body.is_Tutor});
+        res.status(200).json({});
     } catch (e) {
         res.status(500).json({message: e.message})
     }

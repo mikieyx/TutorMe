@@ -27,10 +27,11 @@ model Meeting {
     meeting_id String          @default(cuid()) @id
     tutor User  @relation(name: "tutor", fields: [tutor_id], references: [user_id])
     tutor_id String
-    tutee User  @relation(name: "tutee", fields: [tutee_id], references: [user_id])
-    tutee_id String
-    date  DateTime
-    booked Boolean
+    tutee User?  @relation(name: "tutee", fields: [tutee_id], references: [user_id])
+    tutee_id String?
+    start_Time  DateTime
+    end_Time    DateTime
+    booked Boolean @default(false)
     location String
     class String
 }

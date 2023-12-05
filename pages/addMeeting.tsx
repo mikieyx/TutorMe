@@ -1,129 +1,55 @@
-<<<<<<< HEAD
-import React from 'react'
-import Select from 'react-select'
-import prisma from '../lib/prisma';
-import { Session, getServerSession } from 'next-auth';
-import { authOptions } from './api/auth/[...nextauth]';
-import { User } from '@prisma/client';
-
-// model Meeting {
-//     meeting_id String          @default(cuid()) @id
-//     tutor User  @relation(name: "tutor", fields: [tutor_id], references: [user_id])
-//     tutor_id String
-//     tutee User  @relation(name: "tutee", fields: [tutee_id], references: [user_id])
-//     tutee_id String
-//     date  DateTime
-//     booked Boolean
-//     location String
-//     class String
-// }
-
-type Props = {
-    user: User
-}
-
-export default function AddMeeting({user}: Props){
-
-    return<>
-        <h1>Add Meeting</h1>
-        <div>
-            <h2>Class</h2>
-            <Select></Select>
-        </div>
-        <div>
-            <h2>Location</h2>
-            <input></input>
-        </div>
-        <div>
-            <h2>Date and Time</h2>
-            <input type="datetime-local"></input>
-        </div>
-        <button>Submit</button>
-        
-    </>
-}
-
-export async function getServerSideProps(context){
-    const session: Session = await getServerSession(context.req, context.res, authOptions)
-    
-    if (!session){
-        return {
-            redirect: {
-                destination: './loginPage',
-                permanenet: false,
-            },
-        }
-    }
-    const email = session.user.email
-    const user = await prisma.user.findUnique({
-        where: {
-            email: email,
-        },
-    })
-
-
-    if (!user){
-        return {
-            redirect: {
-                destination: './onboard',
-                permanent: false
-            }
-        }
-    }
-    return {props: {session, user}};
-} 
-=======
 import Logo from "next/image";
 import React, { useState } from 'react';
 import { Session, getServerSession } from 'next-auth';
 import { useSession } from 'next-auth/react';
 import prisma from '../lib/prisma';
 import { authOptions } from './api/auth/[...nextauth]';
+import router from "next/router";
+import { User } from "@prisma/client";
 
 interface AddMeetingProps {
-  addMeeting: (newMeeting: Meeting) => void;
+  user: User
 }
 
 interface Meeting {
-  id: number;
-  tutorName: string;
-  subject: string;
+  class: string;
   // location: string;
   date: string;
   startTime: string;
   endTime: string;
 }
 
-const AddMeeting: React.FC<AddMeetingProps> = ({ addMeeting }) => {
-  const [tutorName, setTutorName] = useState('');
-  const [subject, setSubject] = useState('');
-  // const [location, setLocation] = useState('');
+export default function AddMeeting({ user }: AddMeetingProps){
+  const [_class, setClass] = useState('');
+  const [location, setLocation] = useState('');
   const [date, setDate] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [classes, setClasses] = useState([]);
+  const {data: session} = useSession();
 
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newMeeting: Meeting = {
-      id: Math.floor(Math.random() * 1000),
-      tutorName,
-      subject,
-      // location,
-      date,
-      startTime,
-      endTime,
-    };
-    addMeeting(newMeeting);
-    // Additional logic after adding the meeting, e.g., clearing form fields
-    setTutorName('');
-    setSubject('');
-    // setLocation('');
-    setDate('');
-    setStartTime('');
-    setEndTime('');
-  };
+  async function submitMeeting() {
+    const start_Time = new Date(date.toString() + " " + startTime.toString())
+    const end_Time = new Date(date.toString() + " " + endTime.toString())
+    console.log(_class);
+    const meeting = {
+        tutor_id: user.user_id,
+        start_Time,
+        end_Time,
+        location,
+        class: _class,
+    }
+    const res = await (await fetch("/api/meetings/add", {
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(meeting),
+        method: "POST"
+    })).json();
+    console.log("posted");
+  }
+
+
 
   async function fetchClasses() {
     // Fetch classes from /api/fetch
@@ -162,31 +88,21 @@ const AddMeeting: React.FC<AddMeetingProps> = ({ addMeeting }) => {
       <div className="flex justify-center items-center h-[600px]">
       <div className="bg-white p-8 rounded shadow-md w-80">
         <h2 className="text-2xl font-semibold mb-4">Add Meeting</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex flex-col">
-            <label htmlFor="tutorName" className="text-sm font-medium">
-              Tutor Name:
-            </label>
-            <input
-              type="text"
-              id="tutorName"
-              value={tutorName}
-              onChange={(e) => setTutorName(e.target.value)}
-              className="border p-2 rounded-md focus:outline-none focus:ring focus:border-blue-500"
-            />
-          </div>
+        <form className="space-y-4">
           {/* CHANGE TO A DROPDOWN/SELECT WITH ONLY THE TUTOR'S CLASSES TO CHOOSE FROM */}
           <div className="flex flex-col">
             <label htmlFor="subject" className="text-sm font-medium">
               Subject:
             </label>
-            <input
-              type="text"
-              id="subject"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="border p-2 rounded-md focus:outline-none focus:ring focus:border-blue-500"
-            />
+            <select
+             className="select select-bordered w-full max-w-xs"
+             onChange={(e) => setClass(e.target.value)}
+             >
+                <option disabled selected> Pick the class you want to tutor</option>
+                {user.classes.map((c)=>{
+                    return <option>{c}</option>
+                })}
+            </select>
           </div>
           {/*
           <div className="flex flex-col">
@@ -238,9 +154,20 @@ const AddMeeting: React.FC<AddMeetingProps> = ({ addMeeting }) => {
               className="border p-2 rounded-md focus:outline-none focus:ring focus:border-blue-500"
             />
           </div>
+          <div className="flex flex-col">
+            <label className="text-sm font-medium">
+                Location
+            </label>
+            <input
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="border p-2 rounded-md focus:outline-none focus:ring focus:border-blue-500"
+            />
+          </div>
           <button
             type="submit"
             className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300"
+            onClick={submitMeeting}       
           >
             Add Meeting
           </button>
@@ -251,7 +178,6 @@ const AddMeeting: React.FC<AddMeetingProps> = ({ addMeeting }) => {
   );
 };
 
-export default AddMeeting;
 
 export async function getServerSideProps(context) {
   const session: Session = await getServerSession(context.req, context.res, authOptions);
@@ -269,7 +195,7 @@ export async function getServerSideProps(context) {
   const user = await prisma.user.findUnique({
     where: {
       email: email,
-    },
+    }
   });
 
   if (!user) {
@@ -280,16 +206,6 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  /*
-  const yourClasses = await prisma.user.findUnique({
-    where: {
-      email: session.user.email
-    },
-    select: {
-      classes: true  
-  }
-  })
-  */
-  return { props: { session } };
+  
+  return { props: { session , user } };
 }
->>>>>>> 1db6fecbf4f4c7d90c67ba321ee9809162a23a2a
