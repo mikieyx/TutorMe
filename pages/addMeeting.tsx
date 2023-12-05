@@ -1,7 +1,10 @@
+<<<<<<< HEAD
+=======
+import { User } from '@prisma/client';
+import { Session, getServerSession } from 'next-auth';
+>>>>>>> 7e0e171db31ed61bd4fd74a0bb87d9b55362bb0a
 import Logo from "next/image";
 import React, { useState } from 'react';
-import { Session, getServerSession } from 'next-auth';
-import { useSession } from 'next-auth/react';
 import prisma from '../lib/prisma';
 import { authOptions } from './api/auth/[...nextauth]';
 import router from "next/router";
@@ -19,8 +22,31 @@ interface Meeting {
   endTime: string;
 }
 
+<<<<<<< HEAD
 export default function AddMeeting({ user }: AddMeetingProps){
   const [_class, setClass] = useState('');
+=======
+// model Meeting {
+//     meeting_id String          @default(cuid()) @id
+//     tutor User  @relation(name: "tutor", fields: [tutor_id], references: [user_id])
+//     tutor_id String
+//     tutee User  @relation(name: "tutee", fields: [tutee_id], references: [user_id])
+//     tutee_id String
+//     date  DateTime
+//     booked Boolean
+//     location String
+//     class String
+// }
+
+type Props = {
+  user: User
+}
+
+export default function AddMeeting({user}: Props){
+
+  const [tutorName, setTutorName] = useState('');
+  const [subject, setSubject] = useState('');
+>>>>>>> 7e0e171db31ed61bd4fd74a0bb87d9b55362bb0a
   const [location, setLocation] = useState('');
   const [date, setDate] = useState('');
   const [startTime, setStartTime] = useState('');
@@ -50,6 +76,30 @@ export default function AddMeeting({ user }: AddMeetingProps){
   }
 
 
+<<<<<<< HEAD
+=======
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newMeeting: Meeting = {
+      id: Math.floor(Math.random() * 1000),
+      tutorName,
+      subject,
+      //location,
+      date,
+      startTime,
+      endTime,
+    };
+    //AddMeeting(newMeeting);
+    
+    // Additional logic after adding the meeting, e.g., clearing form fields
+    setTutorName('');
+    setSubject('');
+    // setLocation('');
+    setDate('');
+    setStartTime('');
+    setEndTime('');
+  };
+>>>>>>> 7e0e171db31ed61bd4fd74a0bb87d9b55362bb0a
 
   async function fetchClasses() {
     // Fetch classes from /api/fetch
@@ -178,7 +228,10 @@ export default function AddMeeting({ user }: AddMeetingProps){
   );
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7e0e171db31ed61bd4fd74a0bb87d9b55362bb0a
 export async function getServerSideProps(context) {
   const session: Session = await getServerSession(context.req, context.res, authOptions);
 

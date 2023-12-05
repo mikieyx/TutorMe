@@ -1,6 +1,9 @@
 import Logo from "next/image";
+import { Session, getServerSession } from 'next-auth';
+import prisma from '../lib/prisma';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { authOptions } from './api/auth/[...nextauth]';
 
 interface Meeting {
   id: number;
@@ -13,8 +16,7 @@ interface Meeting {
 
 const MeetingList = () => {
   const router = useRouter();
-  const [meetings, setMeetings] = useState<Meeting[]>([]);
-  
+  const [meetings, setMeetings] = useState<Meeting[]>([]);  
   
 
   useEffect(() => {
@@ -105,3 +107,52 @@ const MeetingList = () => {
 };
 
 export default MeetingList;
+
+export async function getServerSideProps(context) {
+  const session: Session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: './loginPage',
+        permanenet: false,
+      },
+    };
+  }
+
+  if (session.is_tutor) {
+    return {
+      redirect: {
+        destination: '/',
+        permanenet: false,
+      },
+    };
+  }
+  const email = session.user.email;
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: email,
+    },
+  });
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: './onboard',
+        permanent: false,
+      },
+    };
+  }
+  /*
+  const yourClasses = await prisma.user.findUnique({
+    where: {
+      email: session.user.email
+    },
+    select: {
+      classes: true  
+  }
+  })
+  */
+  return { props: { session } };
+}
