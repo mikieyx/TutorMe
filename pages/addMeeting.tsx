@@ -6,6 +6,7 @@ import router from "next/router";
 import { User } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { getServerSession } from "next-auth/next";
+import { Session } from "next-auth";
 
 interface AddMeetingProps {
   user: User
@@ -34,6 +35,7 @@ export default function AddMeeting({ user }: AddMeetingProps){
     console.log(_class);
     const meeting = {
         tutor_id: user.user_id,
+        tutor_name: user.firstName + " " + user.lastName,
         start_Time,
         end_Time,
         location,

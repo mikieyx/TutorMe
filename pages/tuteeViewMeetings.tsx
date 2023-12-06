@@ -1,47 +1,39 @@
+import { Session } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import Logo from "next/image";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import prisma from "../lib/prisma";
+import { authOptions } from "./api/auth/[...nextauth]";
+import { User } from "@prisma/client";
 
 interface Meeting {
-  id: number;
-  tutorName: string;
-  subject: string;
-  // location: string;
-  date: string;
-  startTime: string;
-  endTime: string;
+  meeting_id: string;
+  tutor_id: string;
+  tutee_id: string;
+  tutor_name: string;
+  start_Time: string;
+  end_Time: string; 
+  booked: boolean;
+  location: string;
+  class: string;
 }
+interface TuteeViewMeetingsProps {   
+  user: User;
+  meetingsForTutee: Meeting[];
+};
 
-const MeetingList = () => {
+export default function MeetingList({ user, meetingsForTutee }: TuteeViewMeetingsProps){
   const router = useRouter();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [confirmedMeeting, setConfirmedMeeting] = useState<Meeting | null>(null);
+  
+  console.log(meetingsForTutee)
 
   useEffect(() => {
-    // Mock data for meetings (can be replaced with actual data retrieval)
-    const mockMeetings: Meeting[] = [
-      {
-        id: 1,
-        tutorName: 'John Doe',
-        subject: 'CS166',
-        // location: ENGR 111,
-        date: '2023-12-01',
-        startTime: '10:00 AM',
-        endTime: '11:00 AM',
-      },
-      {
-        id: 2,
-        tutorName: 'Jane Smith',
-        subject: 'CS149',
-        // location: Library Room 2A
-        date: '2023-12-02',
-        startTime: '11:30 AM',
-        endTime: '12:30 PM',
-      },
-      // Add more mock meetings as needed
-    ];
+    
 
-    setMeetings(mockMeetings);
+        setMeetings(meetingsForTutee);
   }, []);
 
   const handleMeetingSelect = (selectedMeeting: Meeting) => {
@@ -104,8 +96,7 @@ const MeetingList = () => {
           <tr>
             <th>Tutor Name</th>
             <th>Subject</th>
-            {/* <th>Location</th> */}
-            <th>Date</th>
+            <th>Location</th>
             <th>Start Time</th>
             <th>End Time</th>
           </tr>
@@ -113,15 +104,12 @@ const MeetingList = () => {
         {/* Meeting data */}
         <tbody>
           {meetings.map((meeting) => (
-            <tr key={meeting.id}>
-              <td>{meeting.tutorName}</td>
-              <td>{meeting.subject}</td>
-              {/*
+            <tr key={meeting.meeting_id}>
+              <td>John Doe</td>
+              <td>{meeting.class}</td>
               <td>{meeting.location}</td>
-              */}
-              <td>{meeting.date}</td>
-              <td>{meeting.startTime}</td>
-              <td>{meeting.endTime}</td>
+              <td>{meeting.start_Time}</td>
+              <td>{meeting.end_Time}</td>
               <td>
                 {/* Select button */}
                 <button onClick={() => handleMeetingSelect(meeting)} 
@@ -136,4 +124,47 @@ const MeetingList = () => {
   );
 };
 
-export default MeetingList;
+export async function getServerSideProps(context) {
+  const session: Session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: './loginPage',
+        permanenet: false,
+      },
+    };
+  }
+  const email = session.user.email;
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: email,
+    }
+  });
+
+  const allMeetings = await prisma.meeting.findMany();
+  
+
+  const filteredMeetings = allMeetings.map((m) => {
+    if (user.classes.includes(m.class)){
+      const stringStartTime = new Date(m.start_Time).toLocaleString();
+      return m;
+    }
+  })
+
+  const meetingsForTutee = JSON.parse(JSON.stringify(filteredMeetings))
+
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: './onboard',
+        permanent: false,
+      },
+    };
+  }
+  
+  return { props: { session , user, meetingsForTutee} };
+}
+

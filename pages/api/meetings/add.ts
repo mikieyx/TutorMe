@@ -22,6 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const newMeeting = await prisma.meeting.create({
             data: {
                 tutor_id: req.body.tutor_id,
+                tutor_name: req.body.tutor_name,
                 start_Time: req.body.start_Time,
                 end_Time: req.body.end_Time,
                 location: req.body.location,
