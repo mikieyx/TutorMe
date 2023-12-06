@@ -28,7 +28,7 @@ export default function MeetingList({ user, meetingsForTutee }: TuteeViewMeeting
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [confirmedMeeting, setConfirmedMeeting] = useState<Meeting | null>(null);
   
-  console.log(meetingsForTutee)
+  // console.log(meetingsForTutee)
 
   useEffect(() => {
     
@@ -36,12 +36,22 @@ export default function MeetingList({ user, meetingsForTutee }: TuteeViewMeeting
         setMeetings(meetingsForTutee);
   }, []);
 
-  const handleMeetingSelect = (selectedMeeting: Meeting) => {
+  async function handleMeetingSelect(selectedMeeting: Meeting){
+    console.log(selectedMeeting)
+    selectedMeeting.tutee_id = user.user_id    
+    const res = await (await fetch("/api/meetings/update", {
+      headers: {
+          "Content-Type": "application/json"
+      },
+      body: JSON.stringify(selectedMeeting),
+      method: "POST"
+  })).json();
+
     // Show confirmation popup
     setConfirmedMeeting(selectedMeeting);
 
     // Remove the confirmed meeting from the meetings list
-    const updatedMeetings = meetings.filter((meeting) => meeting.id !== selectedMeeting.id);
+    const updatedMeetings = meetings.filter((meeting) => meeting.meeting_id !== selectedMeeting.meeting_id);
     setMeetings(updatedMeetings);
   };
 
@@ -105,7 +115,7 @@ export default function MeetingList({ user, meetingsForTutee }: TuteeViewMeeting
         <tbody>
           {meetings.map((meeting) => (
             <tr key={meeting.meeting_id}>
-              <td>John Doe</td>
+              <td>{meeting.tutor_name}</td>
               <td>{meeting.class}</td>
               <td>{meeting.location}</td>
               <td>{meeting.start_Time}</td>
@@ -144,15 +154,21 @@ export async function getServerSideProps(context) {
   });
 
   const allMeetings = await prisma.meeting.findMany();
-  
+  console.log("All meetings")
+  console.log(allMeetings)
 
   const filteredMeetings = allMeetings.map((m) => {
     if (user.classes.includes(m.class)){
-      const stringStartTime = new Date(m.start_Time).toLocaleString();
+      // console.log(m.tutor_name);
       return m;
     }
-  })
+    else {
+      return null;
+    }
+  }).filter((meeting) => meeting !== null);
 
+  // console.log("Filtered Meetings")
+  // console.log(filteredMeetings)
   const meetingsForTutee = JSON.parse(JSON.stringify(filteredMeetings))
 
 
