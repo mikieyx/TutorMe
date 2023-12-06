@@ -1,43 +1,46 @@
+import { Prisma } from "@prisma/client";
 import Logo from "next/image";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import prisma from "../lib/prisma";
+import { Session, getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]";
 
-interface Meeting {
-  id: number;
-  tuteeName: string;
-  subject: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-}
-  const TutorHomePage = () => {
+
+const meetingInclude = Prisma.validator<Prisma.MeetingInclude>()({
+  tutee: {
+    select: {
+      firstName: true,
+      lastName: true
+    }
+  }
+});
+
+type Meeting = Prisma.MeetingGetPayload<{
+  include:typeof meetingInclude
+}>;
+
+const userInclude = Prisma.validator<Prisma.UserInclude>()({
+  meetings_tutor: {
+    include: meetingInclude
+  }
+});
+
+interface TutorHomePageProps {   
+  user: string
+};
+
+export default function MeetingList({ user: _user }: TutorHomePageProps){
+  const user: Prisma.UserGetPayload<{
+    include: typeof userInclude;
+  }> = JSON.parse(_user);
   const router = useRouter();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
 
   useEffect(() => {
-    // Mock data for meetings (can be replaced with actual data retrieval)
-    const mockMeetings: Meeting[] = [
-      {
-        id: 1,
-        tuteeName: 'Hee Hee',
-        subject: 'CS166',
-        date: '2023-12-01',
-        startTime: '10:00 AM',
-        endTime: '11:00 AM',
-      },
-      {
-        id: 2,
-        tuteeName: 'Gee Gee',
-        subject: 'CS149',
-        date: '2023-12-02',
-        startTime: '11:30 AM',
-        endTime: '12:30 PM',
-      },
-      // Add more mock meetings as needed
-    ];
-
-    setMeetings(mockMeetings);
-  }, []);
+   
+    setMeetings(user.meetings_tutor);
+  }, [user]);
 
   return (
     <main className="w-9/12 mx-auto sticky max-h-[100px] " >
@@ -81,23 +84,20 @@ interface Meeting {
           <tr>
             <th>Tutee Name</th>
             <th>Subject</th>
-            {/* <th>Location</th> */}
-            <th>Date</th>
+            <th>Location</th>
             <th>Start Time</th>
             <th>End Time</th>
           </tr>
         </thead>
         {/* Meeting data */}
         <tbody>
-          {meetings.map((meeting) => (
-            <tr key={meeting.id}>
-              <td>{meeting.tuteeName}</td>
-              <td>{meeting.subject}</td>
-              {/* <td>{meeting.location}</td> */}
-              <td>{meeting.date}</td>
-              <td>{meeting.startTime}</td>
-              <td>{meeting.endTime}</td>
-              
+          {meetings.filter(meeting => meeting.booked).map((meeting) => (
+            <tr key={meeting.meeting_id}>
+              <td>{meeting.tutee.firstName} {meeting.tutee.lastName}</td>
+              <td>{meeting.class}</td>
+              <td>{meeting.location}</td> 
+              <td>{meeting.start_Time}</td>
+              <td>{meeting.end_Time}</td>
             </tr>
           ))}
         </tbody>
@@ -107,4 +107,53 @@ interface Meeting {
   );
 };
 
-export default TutorHomePage;
+export async function getServerSideProps(context) {
+  const session: Session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: './loginPage',
+        permanenet: false,
+      },
+    };
+  }
+
+  if (!session.is_tutor) {
+    return {
+      redirect: {
+        destination: '/',
+        permanenet: false,
+      },
+    };
+  }
+  const email = session.user.email;
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: email,
+    },
+    include: userInclude
+  });
+  
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: './onboard',
+        permanent: false,
+      },
+    };
+  }
+  /*
+  const yourClasses = await prisma.user.findUnique({
+    where: {
+      email: session.user.email
+    },
+    select: {
+      classes: true  
+  }
+  })
+  */
+  return { props: { session , user:JSON.stringify(user) } };
+}

@@ -9,6 +9,10 @@ import { User } from "@prisma/client";
 
 interface Meeting {
   meeting_id: string;
+  tutor: {
+    firstName: string;
+    lastName: string;
+  };
   tutor_id: string;
   tutee_id: string;
   tutor_name: string;
@@ -39,6 +43,7 @@ export default function MeetingList({ user, meetingsForTutee }: TuteeViewMeeting
   async function handleMeetingSelect(selectedMeeting: Meeting){
     console.log(selectedMeeting)
     selectedMeeting.tutee_id = user.user_id    
+    selectedMeeting.booked = true
     const res = await (await fetch("/api/meetings/update", {
       headers: {
           "Content-Type": "application/json"
@@ -115,7 +120,7 @@ export default function MeetingList({ user, meetingsForTutee }: TuteeViewMeeting
         <tbody>
           {meetings.map((meeting) => (
             <tr key={meeting.meeting_id}>
-              <td>{meeting.tutor_name}</td>
+              <td>{meeting.tutor.firstName} {meeting.tutor.lastName}</td>
               <td>{meeting.class}</td>
               <td>{meeting.location}</td>
               <td>{meeting.start_Time}</td>
@@ -153,7 +158,16 @@ export async function getServerSideProps(context) {
     }
   });
 
-  const allMeetings = await prisma.meeting.findMany();
+  const allMeetings = await prisma.meeting.findMany({
+    include: {
+      tutor: {
+        select: {
+          firstName: true,
+          lastName: true
+        }
+      }
+    }
+  });
   console.log("All meetings")
   console.log(allMeetings)
 

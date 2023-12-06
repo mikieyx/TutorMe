@@ -68,8 +68,6 @@ Here's to the pursuit of knowledge and the joy of <span className='text-[#F4C02B
         <h1 >{data?.user.email}</h1>
         <div>
 
-           
-            
         </div>
         </div>
         
@@ -101,6 +99,7 @@ Here's to the pursuit of knowledge and the joy of <span className='text-[#F4C02B
     })
 
     if (user){
+      console.log(session)
         return {
             redirect: {
                 destination: session.is_tutor ? "/tutorHomePage" : '/tuteeHomePage',
@@ -108,6 +107,7 @@ Here's to the pursuit of knowledge and the joy of <span className='text-[#F4C02B
             }
         }
     }
+    console.log("LAST")
     return {
       redirect: {
         destination: "/onboard",

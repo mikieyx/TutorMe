@@ -4,45 +4,46 @@ import prisma from '../lib/prisma';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { authOptions } from './api/auth/[...nextauth]';
+import { User, Prisma } from "@prisma/client";
 
-interface Meeting {
-  id: number;
-  tutorName: string;
-  subject: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-}
+const meetingInclude = Prisma.validator<Prisma.MeetingInclude>()({
+  tutor: {
+    select: {
+      firstName: true,
+      lastName: true
+    }
+  }
+});
 
-const MeetingList = () => {
+type Meeting = Prisma.MeetingGetPayload<{
+  include:typeof meetingInclude
+}>;
+
+const userInclude = Prisma.validator<Prisma.UserInclude>()({
+  meetings_tutee: {
+    include: meetingInclude
+  }
+});
+
+interface TuteeHomePageProps {   
+  user: string
+};
+
+export default function MeetingList({ user: _user }: TuteeHomePageProps) {
+  const user: Prisma.UserGetPayload<{
+    include: typeof userInclude;
+  }> = JSON.parse(_user);
   const router = useRouter();
   const [meetings, setMeetings] = useState<Meeting[]>([]);  
-  
+
+
 
   useEffect(() => {
-    // Mock data for meetings (can be replaced with actual data retrieval)
-    const mockMeetings: Meeting[] = [
-      {
-        id: 1,
-        tutorName: 'Jimmy Ji',
-        subject: 'CMPE133',
-        date: '2023-12-01',
-        startTime: '10:00 AM',
-        endTime: '11:00 AM',
-      },
-      {
-        id: 2,
-        tutorName: 'Goo Fo',
-        subject: 'CS160',
-        date: '2023-12-02',
-        startTime: '11:30 AM',
-        endTime: '12:30 PM',
-      },
-      // Add more mock meetings as needed
-    ];
+    
 
-    setMeetings(mockMeetings);
-  }, []);
+    setMeetings(user.meetings_tutee);
+}, [user]);
+
 
   return (
     <main className="w-9/12 mx-auto sticky max-h-[100px] " >
@@ -82,7 +83,7 @@ const MeetingList = () => {
           <tr>
             <th>Tutor Name</th>
             <th>Subject</th>
-            <th>Date</th>
+            <th>Location</th>
             <th>Start Time</th>
             <th>End Time</th>
           </tr>
@@ -90,12 +91,12 @@ const MeetingList = () => {
         {/* Meeting data */}
         <tbody>
           {meetings.map((meeting) => (
-            <tr key={meeting.id}>
-              <td>{meeting.tutorName}</td>
-              <td>{meeting.subject}</td>
-              <td>{meeting.date}</td>
-              <td>{meeting.startTime}</td>
-              <td>{meeting.endTime}</td>
+            <tr key={meeting.meeting_id}>
+              <td>{meeting.tutor_name}</td>
+              <td>{meeting.class}</td>
+              <td>{meeting.location}</td>
+              <td>{meeting.start_Time}</td>
+              <td>{meeting.end_Time}</td>
               
             </tr>
           ))}
@@ -106,7 +107,6 @@ const MeetingList = () => {
   );
 };
 
-export default MeetingList;
 
 export async function getServerSideProps(context) {
   const session: Session = await getServerSession(context.req, context.res, authOptions);
@@ -134,7 +134,9 @@ export async function getServerSideProps(context) {
     where: {
       email: email,
     },
+    include: userInclude
   });
+  
 
   if (!user) {
     return {
@@ -154,5 +156,5 @@ export async function getServerSideProps(context) {
   }
   })
   */
-  return { props: { session } };
+  return { props: { session , user:JSON.stringify(user) } };
 }

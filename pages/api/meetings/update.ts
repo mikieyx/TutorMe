@@ -24,6 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             },
             data: {
                 tutee_id: req.body.tutee_id,
+                booked: req.body.booked,
             }
         })
         res.status(200).json({});
