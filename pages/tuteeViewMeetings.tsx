@@ -140,12 +140,22 @@ export default function MeetingList({ user, meetingsForTutee }: TuteeViewMeeting
 };
 
 export async function getServerSideProps(context) {
+  // @ts-ignore
   const session: Session = await getServerSession(context.req, context.res, authOptions);
 
   if (!session) {
     return {
       redirect: {
         destination: './loginPage',
+        permanenet: false,
+      },
+    };
+  }
+
+  if (session.is_tutor) {
+    return {
+      redirect: {
+        destination: '/',
         permanenet: false,
       },
     };
@@ -197,4 +207,3 @@ export async function getServerSideProps(context) {
   
   return { props: { session , user, meetingsForTutee} };
 }
-
