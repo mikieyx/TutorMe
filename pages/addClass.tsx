@@ -8,7 +8,6 @@ import { authOptions } from './api/auth/[...nextauth]';
 
 
 
-
 export default function AddClass(){
     const [classes, setClasses] = useState([]);
     const [classInput, setClassInput] = useState('')
@@ -16,6 +15,12 @@ export default function AddClass(){
     const {data: session, update: updateSession} = useSession();
 
   function addClass() {
+    if (classInput == null) {
+      return;
+    }
+    if (classInput == '') {
+      return;
+    }
     setClasses([...classes, classInput.toUpperCase().trim()]);
     setClassInput('');
   }
@@ -108,6 +113,7 @@ export default function AddClass(){
 }
 
 export async function getServerSideProps(context){
+  // @ts-ignore
     const session: Session = await getServerSession(context.req, context.res, authOptions)
     
     if (!session){
