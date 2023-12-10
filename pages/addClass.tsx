@@ -14,7 +14,7 @@ export default function AddClass(){
     const [classes, setClasses] = useState([]);
     const [classInput, setClassInput] = useState('')
     const router = useRouter();
-    const {data: session} = useSession();
+    const {data: session, update: updateSession} = useSession();
 
   function addClass() {
     setClasses([...classes, classInput.toUpperCase().trim()]);
@@ -38,8 +38,7 @@ export default function AddClass(){
         method: 'POST',
       })
     ).json();
-    console.log("Is tutor: " + session.is_tutor);
-    router.push(session.is_tutor ? '/tutorHomePage' : '/tuteeHomePage');
+    router.push((await updateSession()).is_tutor ? '/tutorHomePage' : '/tuteeHomePage');
   }
 
   return (
@@ -137,7 +136,5 @@ export async function getServerSideProps(context){
     };
   };
   
-
-  return { props: { session } 
-  };
+  return { props: { session }};
 };
