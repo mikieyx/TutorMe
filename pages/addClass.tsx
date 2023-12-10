@@ -8,7 +8,6 @@ import { authOptions } from './api/auth/[...nextauth]';
 
 
 
-// implement a delete button 
 
 export default function AddClass(){
     const [classes, setClasses] = useState([]);
