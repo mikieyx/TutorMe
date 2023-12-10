@@ -95,8 +95,8 @@ export default function MeetingList({ user: _user }: TuteeHomePageProps) {
               <td>{meeting.tutor_name}</td>
               <td>{meeting.class}</td>
               <td>{meeting.location}</td>
-              <td>{meeting.start_Time}</td>
-              <td>{meeting.end_Time}</td>
+              <td>{new Date(meeting.start_Time).toLocaleString()}</td>
+              <td>{new Date(meeting.end_Time).toLocaleString()}</td>
               
             </tr>
           ))}

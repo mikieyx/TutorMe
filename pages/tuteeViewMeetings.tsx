@@ -123,8 +123,8 @@ export default function MeetingList({ user, meetingsForTutee }: TuteeViewMeeting
               <td>{meeting.tutor.firstName} {meeting.tutor.lastName}</td>
               <td>{meeting.class}</td>
               <td>{meeting.location}</td>
-              <td>{meeting.start_Time}</td>
-              <td>{meeting.end_Time}</td>
+              <td>{new Date(meeting.start_Time).toLocaleString()}</td>
+              <td>{new Date(meeting.end_Time).toLocaleString()}</td>
               <td>
                 {/* Select button */}
                 <button onClick={() => handleMeetingSelect(meeting)} 

@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import Logo from "next/image";
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import prisma from "../lib/prisma";
 import { Session, getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
@@ -33,7 +33,7 @@ interface TutorHomePageProps {
 export default function MeetingList({ user: _user }: TutorHomePageProps){
   const user: Prisma.UserGetPayload<{
     include: typeof userInclude;
-  }> = JSON.parse(_user);
+  }> = useMemo(() => JSON.parse(_user), [_user]);
   const router = useRouter();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
 
@@ -96,13 +96,57 @@ export default function MeetingList({ user: _user }: TutorHomePageProps){
               <td>{meeting.tutee.firstName} {meeting.tutee.lastName}</td>
               <td>{meeting.class}</td>
               <td>{meeting.location}</td> 
-              <td>{meeting.start_Time}</td>
-              <td>{meeting.end_Time}</td>
+              <td>{new Date(meeting.start_Time).toLocaleString()}</td>
+              <td>{new Date(meeting.end_Time).toLocaleString()}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
+
+
+             
+    <div className="p-5"> {/* Applying padding using DaisyUI utility classes */}
+
+      <h2 className="text-2xl font-bold mb-4">Unbooked Meetings</h2>
+      
+      {/* Table display */}
+      <table className="table w-full">
+        {/* Table headers */}
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Location</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+          </tr>
+        </thead>
+        {/* Meeting data */}
+        <tbody>
+          {meetings.filter(meeting => !meeting.booked).map((meeting) => (
+            <tr key={meeting.meeting_id}>
+              <td>{meeting.class}</td>
+              <td>{meeting.location}</td> 
+              <td>{new Date(meeting.start_Time).toLocaleString()}</td>
+              <td>{new Date(meeting.end_Time).toLocaleString()}</td>
+              <td><button className="btn btn-error" onClick={async() =>{
+                setMeetings(meetings.filter((m) => m.meeting_id!=meeting.meeting_id))
+                const res = await fetch("/api/meetings/delete", {
+                  headers: {
+                      "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({meeting_id: meeting.meeting_id}),
+                  method: "POST"
+                });
+                if (res.status !== 200) router.reload();
+              }}>Delete</button></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+
     </main>
   );
 };
